@@ -30,7 +30,7 @@
 <text x="372" y="387"><tspan font-weight="700">Build:</tspan> Install forward dispatch and bind weights.</text>
 <path d="M655 456 V494" class="arrow"/>
 <rect x="350" y="494" width="610" height="78" rx="6" fill="white" stroke="#cbd7e4"/>
-<text x="372" y="542"><tspan font-weight="700">Runtime:</tspan> Dispatch to plugin or native forward in SGLang’s ModelRunner.</text>
+<text x="372" y="542"><tspan font-weight="700">Runtime:</tspan> Coordinate plugin and native execution in SGLang’s ModelRunner.</text>
 <path d="M655 572 V586 H490 V598" class="arrow"/>
 <path d="M655 586 H820 V598" class="arrow"/>
 <text x="490" y="620" text-anchor="middle" style="font-size:23px"><tspan font-weight="700">Plugin</tspan> · covered steps</text>
