@@ -1,70 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="820" viewBox="0 0 1120 820" role="img" aria-labelledby="title desc">
-<title id="title">External kernel plugins and the SGLang runtime</title>
-<desc id="desc">External AMD and NVIDIA packages provide specifications and specialized execution. SGLang registers and validates specifications, builds the plugin using model weights, and supplies runtime state through integration interfaces. A dispatcher routes covered steps to the built plugin or other steps to native execution. Weight preparation happens at startup; runtime state is accessed when available. The two backends have distinct interfaces.</desc>
-<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#64768f"/></marker></defs>
-<style>text{font-family:Arial,Helvetica,sans-serif;fill:#23334b}.section{font-size:27px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px;fill:#4e617d}.arrow{fill:none;stroke:#64768f;stroke-width:2.5;marker-end:url(#arr)}.data{fill:none;stroke:#64768f;stroke-width:2.5;marker-end:url(#arr)}</style>
-<rect width="1120" height="820" rx="16" fill="#fafbfd"/>
-<!-- Two rectangular ownership regions -->
-<rect x="24" y="24" width="306" height="772" rx="12" fill="#f0edfa" stroke="#d7cee9"/>
-<rect x="354" y="24" width="742" height="772" rx="12" fill="#f0f4f9" stroke="#d3deeb"/>
-<text x="46" y="65" class="section">External Libraries</text>
-<text x="378" y="65" class="section">SGLang</text>
-<rect x="46" y="145" width="260" height="210" rx="10" fill="white" stroke="#d7cee9"/>
-<text x="66" y="188" class="head">AMD Mono</text>
-<text x="66" y="228" class="small">Model spec</text>
-<text x="66" y="267" class="small">Weight preparation</text>
-<text x="66" y="306" class="small">Specialized kernels</text>
-<rect x="46" y="410" width="260" height="210" rx="10" fill="white" stroke="#d7cee9"/>
-<text x="66" y="453" class="head">NVIDIA Mega</text>
-<text x="66" y="493" class="small">Model spec</text>
-<text x="66" y="532" class="small">Weight preparation</text>
-<text x="66" y="571" class="small">Specialized kernels</text>
-<path d="M306 490 H342 V219" fill="none" stroke="#64768f" stroke-width="2.5"/>
-<!-- Startup control plane -->
-<text x="378" y="113" class="small">STARTUP</text>
-<rect x="382" y="174" width="220" height="90" rx="11" fill="white" stroke="#c6d3e4"/>
-<text x="492" y="212" text-anchor="middle" class="head">Register</text>
-<text x="492" y="244" text-anchor="middle" class="small">Model → spec</text>
-<path d="M306 219 H382" class="arrow"/>
-<path d="M602 219 H647" class="arrow"/>
-<rect x="647" y="174" width="220" height="90" rx="11" fill="white" stroke="#c6d3e4"/>
-<text x="757" y="212" text-anchor="middle" class="head">Guard</text>
-<text x="757" y="244" text-anchor="middle" class="small">Validate setup</text>
-<path d="M867 219 H903" class="arrow"/>
-<text x="920" y="210" class="small">Invalid</text><text x="920" y="240" class="head">Error</text>
-<path d="M757 264 V313" class="arrow"/>
-<text x="774" y="294" class="small">Valid</text>
-<rect x="647" y="313" width="220" height="84" rx="11" fill="white" stroke="#c6d3e4"/>
-<text x="757" y="347" text-anchor="middle" class="head">Build</text>
-<text x="757" y="378" text-anchor="middle" class="small">Prepare execution</text>
-<!-- Resources and binding -->
-<rect x="382" y="454" width="230" height="193" rx="11" fill="#e5f1ec" stroke="#afcfc0"/>
-<text x="402" y="492" class="head">Runtime resources</text>
-<text x="402" y="535" class="body">Weights</text>
-<text x="402" y="574" class="body">KV cache</text>
-<text x="402" y="613" class="body">Attention metadata</text>
-<path d="M497 454 V355 H647" class="data"/>
-<text x="515" y="427" class="small">Weights at build</text>
-<path d="M612 550 H647" class="data"/>
-<rect x="647" y="454" width="220" height="193" rx="11" fill="#e5f1ec" stroke="#afcfc0"/>
-<text x="757" y="492" text-anchor="middle" class="head">Binding / access</text>
-<text x="757" y="536" text-anchor="middle" class="body">Tensor views</text>
-<text x="757" y="576" text-anchor="middle" class="body">Runtime state</text>
-<text x="757" y="616" text-anchor="middle" class="small">Read when available</text>
-<!-- Build result along outer rail -->
-<path d="M867 355 H1044 V707" class="arrow"/>
-<text x="1046" y="402" text-anchor="end" class="small">Built instance</text>
-<!-- Execution remains inside the SGLang region -->
-<text x="378" y="684" class="small">EXECUTION</text>
-<rect x="382" y="707" width="190" height="64" rx="10" fill="#e3e9f2" stroke="#c6d3e4"/>
-<text x="477" y="733" text-anchor="middle" class="small">Other shapes</text>
-<text x="477" y="759" text-anchor="middle" style="font-size:22px;font-weight:700">Native forward</text>
-<rect x="608" y="707" width="175" height="64" rx="10" fill="white" stroke="#c6d3e4"/>
-<text x="695" y="747" text-anchor="middle" class="head">Dispatch</text>
-<rect x="823" y="707" width="247" height="64" rx="10" fill="#d4e9de" stroke="#afcfc0"/>
-<text x="946" y="733" text-anchor="middle" class="small">Covered</text>
-<text x="946" y="759" text-anchor="middle" class="head">Plugin forward</text>
-<path d="M608 739 H572" class="arrow"/>
-<path d="M783 739 H823" class="arrow"/>
-<path d="M757 647 V679 H899 V707" class="data"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="960" viewBox="0 0 1120 960" role="img" aria-labelledby="title desc">
+<title id="title">External libraries and SGLang integration</title>
+<desc id="desc">AMD Mono and NVIDIA Mega register specifications. SGLang validates configuration, builds the implementation and connects resources, then dispatches supported steps to the plugin or other steps to native execution. Function names reflect the separate AMD and NVIDIA interfaces.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#718198"/></marker></defs>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#24334b}.title{font-size:30px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:23px}.code{font-family:Menlo,Consolas,monospace;font-size:20px}.note{font-size:21px;fill:#52637b}.arrow{fill:none;stroke:#718198;stroke-width:2.5;marker-end:url(#arrow)}</style>
+<rect width="1120" height="960" fill="#fafbfd" rx="14"/>
+<rect x="24" y="24" width="300" height="912" rx="12" fill="#f0edfa" stroke="#d7cee9"/>
+<rect x="354" y="24" width="742" height="912" rx="12" fill="#f0f4f9" stroke="#d3deeb"/>
+<text x="46" y="73" class="title">External Libraries</text>
+<text x="382" y="73" class="title">SGLang</text>
+<rect x="46" y="145" width="254" height="220" rx="10" fill="white" stroke="#d7cee9"/>
+<text x="66" y="189" class="head">AMD Mono</text>
+<text x="66" y="235" class="body">Model spec</text>
+<text x="66" y="278" class="body">Weight preparation</text>
+<text x="66" y="321" class="body">Specialized kernels</text><rect x="46" y="435" width="254" height="220" rx="10" fill="white" stroke="#d7cee9"/>
+<text x="66" y="479" class="head">NVIDIA Mega</text>
+<text x="66" y="525" class="body">Model spec</text>
+<text x="66" y="568" class="body">Weight preparation</text>
+<text x="66" y="611" class="body">Specialized kernels</text><path d="M300 225 H339 V177 H390" class="arrow"/>
+<path d="M300 515 H339 V225" fill="none" stroke="#718198" stroke-width="2.5"/>
+<rect x="390" y="118" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="154" text-anchor="middle" class="head">Register</text><text x="725" y="188" text-anchor="middle" class="code">monokernels.spec.register()</text><text x="725" y="217" text-anchor="middle" class="code">megakernels.spec.register()</text><path d="M725 236 V276" class="arrow"/><rect x="390" y="276" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="312" text-anchor="middle" class="head">Guard</text><text x="725" y="346" text-anchor="middle" class="code">handle_monokernel()</text><text x="725" y="375" text-anchor="middle" class="code">handle_nvidia_megakernel()</text><path d="M725 394 V434" class="arrow"/><rect x="390" y="434" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="470" text-anchor="middle" class="head">Build</text><text x="725" y="504" text-anchor="middle" class="code">install_monokernel_forward()</text><text x="725" y="533" text-anchor="middle" class="code">install_megakernel()</text><path d="M725 552 V592" class="arrow"/><rect x="390" y="592" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="628" text-anchor="middle" class="head">Bind resources</text><text x="725" y="662" text-anchor="middle" class="body">Weights · KV cache · Attention metadata</text><text x="725" y="691" text-anchor="middle" class="note">NVIDIA: MegakernelBinding / ForwardView</text><path d="M725 710 V750" class="arrow"/><rect x="390" y="750" width="670" height="75" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="786" text-anchor="middle" class="head">Runtime dispatch</text><path d="M725 825 V842 H548 V861" class="arrow"/>
+<path d="M725 842 H902 V861" class="arrow"/>
+<rect x="390" y="861" width="316" height="58" rx="10" fill="#dcefe6" stroke="#afcfc0"/>
+<text x="548" y="897" text-anchor="middle" class="body">Covered → Plugin forward</text>
+<rect x="744" y="861" width="316" height="58" rx="10" fill="#e3e9f2" stroke="#c6d3e4"/>
+<text x="902" y="897" text-anchor="middle" class="body">Other → Native forward</text>
 </svg>
