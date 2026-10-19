@@ -60,12 +60,33 @@ limit), decode-versus-prefill mean KL on eight short prompts, mean KL on four
 <0.06, and an exact passkey substring. These checks can detect gross failures;
 passing does not establish numerical equivalence or improved model accuracy.
 
+From the pinned plugin checkout, the executed commands were:
+
+```bash
+python -m pytest -q test/unit
+SGLANG_NVIDIA_MEGAKERNEL_E2E_URL=http://127.0.0.1:31080 \
+SGLANG_NVIDIA_MEGAKERNEL_E2E_MODEL_PATH="$MODEL_PATH" \
+python -m pytest -q -s test/e2e/test_deepseek_v41_server.py::TestMegakernelVerify \
+  -k 'not the_tested_batches_run_the_plugin'
+```
+
+The excluded method only checks its assumed graph ceiling; the runner verifies
+all four ranks' target/draft activation and actual graph batches separately.
+The 249 unit tests and four serving tests per arm passed.
+
 The pinned legacy GSM8K helper uses the first eight test examples as few-shot
 demonstrations and includes those examples among the first 200 questions. It is
 therefore described as a regression gate, not a clean held-out benchmark. A
 follow-up audit repeats parallelism 12/16 at 512 tokens with per-question output
 and completion metadata, then runs parallelism 8 with a 1,024-token cap. This
 checks truncation and the low-concurrency path after the initial scores differed.
+With common seed `496233168`, the off/on repeats scored 179/181, 180/185 and 181/181
+out of 200 for the three settings, respectively. No response reached its cap.
+Reported real acceptance lengths weighted by request verification calls ranged
+from 3.39 to 3.45. Initial gates used different automatic seeds and scored 183/176
+and 184/179 off/on; all observations remain in the evidence, and neither pair
+establishes numerical equivalence. The paired audit includes prompt/answer
+hashes, per-question outcomes, completion lengths and speculative counters.
 
 ## Controlled static timing
 
@@ -123,6 +144,11 @@ The match-expected simulator targets mean acceptance 3.51; individual steps and
 short logging windows vary. The benchmark includes normal serving effects such
 as prefill/decode scheduling within the closed loop, rather than isolating a
 single CUDA kernel.
+Before/after metrics also verify every timed point's completed token count and
+request-level speculative verify-call count. Their ratio ranges 3.483–3.524
+across the 32 measured pass/concurrency points. This completed-output ratio
+includes end-of-request trimming and is reported separately from the simulator
+setting. Per-point counts accompany `static-results.json`.
 
 ## Diagnostic profiles
 
@@ -166,8 +192,13 @@ request had 11 additional runtime nonce tokens that were not recovered.
 
 The matched replay uses acceptance 5.4, ragged verification in static mode,
 BF16 Markov W2, thinking enabled, high reasoning effort, fastokens, a 16,384
-prefill chunk, maximum two running requests, and prefill/decode interval zero.
+prefill chunk, maximum 256 running requests, and prefill/decode interval zero.
 Both plugin arms retain the same required host Engram and FP8 KV setup.
+Actual client concurrency remains one. The historical server cap of two clamps
+captured graph batches to [1,2] in this runtime, omitting plugin-required batches
+5–8. We stopped that initial baseline before measurement and restarted all four
+arms with the same cap 256 and full graph ceiling 64; the incomplete attempt is
+excluded from every comparison.
 This differs from the historical GPU-Engram recipe, so historical latency is
 not used as a baseline.
 

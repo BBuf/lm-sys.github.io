@@ -68,19 +68,24 @@ The timeline shows how routing, expert GEMMs and the output handoff compose. A s
 
 Per-user decode speed is `(output tokens − 1) / (HTTP completion time − first text arrival)`, summarized with the supplied client's p50 convention. Aggregate output throughput is measured separately over the complete timed request interval, including prefill, then divided by four GPUs. This distinction matters: the x-axis is not concurrency multiplied by a median decode speed. The [request-level records](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/static-request-samples.csv) retain all 800 timed requests.
 
-Matching the simulated mean acceptance controls the amount of speculative work; it does not measure a real workload's acceptance rate. Individual steps and short windows still vary. These points cover low-concurrency serving, not a complete Pareto frontier. Both arms use the same per-rank Engram host tables and TP synchronization settings, with 100% huge-page coverage reported for both Engram layers on every rank. The [reproduction notes](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/README.md) include the exact launch settings, timing definitions and sampling procedure. The environment pins SGLang at `7b7015e72e4f`, the plugin at `d47deb3390e14`, model revision `314113f8a7da`, and PyTorch 2.14.1+cu130 on CUDA 13.
+Matching the simulated mean acceptance controls the amount of speculative work; it does not measure a real workload's acceptance rate. Individual steps and short windows still vary; completed output tokens per request-level verify call ranged from 3.483 to 3.524 over the measured points. These points cover low-concurrency serving, not a complete Pareto frontier. Both arms use the same per-rank Engram host tables and TP synchronization settings, with 100% huge-page coverage reported for both Engram layers on every rank. The [reproduction notes](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/README.md) include the exact launch settings, timing definitions and sampling procedure. The environment pins SGLang at `7b7015e72e4f`, the plugin at `d47deb3390e14`, model revision `314113f8a7da`, and PyTorch 2.14.1+cu130 on CUDA 13. Reproduction requires that pinned SGLang integration build from [PR #44945](https://github.com/sgl-project/sglang/pull/44945).
 
-**Correctness checks with real acceptance.** We independently ran the pinned plugin's unit tests and serving regression suite before timing. All 249 unit tests and four serving checks per arm passed. Startup logs confirmed that both target and draft plugins were active on every TP rank, with the required target graph batches including 5–8 captured. Acceptance simulation was disabled for these checks.
+**Correctness checks with real acceptance.** Before timing, all 249 plugin unit tests and four serving regression checks per arm passed. Startup logs confirmed target and draft plugin activation on every TP rank and the required graph batches, including 5–8. Acceptance simulation was disabled for correctness testing.
 
-| Check | Plugin off | Plugin on | Test threshold |
+We also repeated the legacy GSM8K checks with the same server seed (`496233168`), identical prompts and per-question records, adding a concurrency-eight run with a larger output cap. The table reports those paired repeats alongside the original numerical-consistency and retrieval checks.
+
+| Check | Plugin off | Plugin on | Criterion |
 | --- | ---: | ---: | --- |
-| Legacy GSM8K-200 gate, parallel 12 | 183/200 | 176/200 | >85% |
-| Legacy GSM8K-200 gate, parallel 16 | 184/200 | 179/200 | >85% |
+| GSM8K-200 regression repeat, parallel 12, cap 512 | 179/200 | 181/200 | >85% legacy gate |
+| GSM8K-200 regression repeat, parallel 16, cap 512 | 180/200 | 185/200 | >85% legacy gate |
+| GSM8K-200 diagnostic, parallel 8, cap 1,024 | 181/200 | 181/200 | Paired diagnostic |
 | Decode-versus-prefill mean KL, 8 short prompts | 0.00719 | 0.00836 | <0.03 |
 | Decode-versus-prefill mean KL, 4 prompts of 18K–27K tokens | 0.00359 | 0.00793 | <0.06 |
 | Long-context passkey retrieval | Pass | Pass | Exact passkey |
 
-The [serving suite](https://github.com/sgl-project/sgl-nvidia-mega/blob/d47deb3390e14741c9420ac702954e7611a14da1/test/e2e/test_deepseek_v41_server.py) is a gross-failure and consistency check. Its legacy GSM8K helper uses greedy decoding with a 512-token cap, and reuses the first eight test examples as demonstrations. We therefore report it as a regression gate rather than a clean held-out benchmark. The plugin scored lower in both initial GSM8K runs. Those initial servers used different automatically selected random seeds, so this pair does not isolate the source of the difference. Passing the thresholds does not establish numerical equivalence or an accuracy improvement.
+No question in the paired repeat reached its output cap. Real acceptance lengths, weighted by verification calls, ranged from 3.39 to 3.45 across these checks. The [serving suite](https://github.com/sgl-project/sgl-nvidia-mega/blob/d47deb3390e14741c9420ac702954e7611a14da1/test/e2e/test_deepseek_v41_server.py) uses a legacy GSM8K helper with eight test examples reused as demonstrations, so this is a regression gate rather than a standard held-out evaluation.
+
+The initial servers, which used different automatically selected seeds, scored 183/184 with the plugin off and 176/179 with it on at parallelism 12/16. That difference motivated the paired repeat. Individual questions still change outcome in both directions, even when aggregate scores match. The [initial gate results](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/nvidia-accuracy-evidence.json) and [paired audit](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/accuracy-audit-evidence.json) preserve both observations. Passing these small checks does not establish numerical equivalence or an accuracy improvement.
 
 ## Plugin System: Design and Integration
 

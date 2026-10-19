@@ -3,6 +3,7 @@
 import argparse
 import json
 import statistics as stats
+import re
 from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
@@ -38,6 +39,19 @@ for arm in ('off', 'on'):
             assert sorted(r['conc'] for r in data) == [1, 2, 4, 8]
             for r in data:
                 assert r['isl'] == 8192 and r['osl'] == 1024
+                def counters(when):
+                    text=(directory/f'pass{p}/c{r["conc"]}-{when}-metrics.txt').read_text()
+                    result={}
+                    for name in ['sglang:spec_verify_calls_total','sglang:generation_tokens_total']:
+                        result[name]=sum(float(m[1]) for m in re.finditer(
+                            r'^'+re.escape(name)+r'(?:\{[^\n]*\})?\s+([0-9.eE+-]+)$',text,re.M))
+                    return result
+                before,after=counters('before'),counters('after')
+                calls=after['sglang:spec_verify_calls_total']-before['sglang:spec_verify_calls_total']
+                tokens=after['sglang:generation_tokens_total']-before['sglang:generation_tokens_total']
+                assert calls>0 and tokens==r['n']*1024, 'Unmatched metric accounting window'
+                r['request_verify_calls']=calls
+                r['output_tokens_per_request_verify_call']=tokens/calls
                 records.append({'arm': arm, 'launch': repeat, 'pass': p, **r})
 
 def normalized_command(command):

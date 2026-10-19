@@ -11,12 +11,13 @@ import matplotlib.pyplot as plt
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--results', type=Path, required=True)
 ap.add_argument('--out', type=Path, required=True)
+ap.add_argument('--run-suffix', default='-v3')
 a = ap.parse_args()
 a.out.mkdir(parents=True, exist_ok=True)
 records, manifests = [], []
 for arm in ('off', 'on'):
     for launch in (1, 2):
-        path = a.results / f'agentx-{arm}-r{launch}'
+        path = a.results / f'agentx-{arm}-r{launch}{a.run_suffix}'
         m = json.loads((path/'manifest.json').read_text())
         assert m['status'] == 'passed' and m['mode'] == 'agentx' and m['arm'] == arm
         assert m['environment']['SGLANG_SIMULATE_ACC_LEN'] == '5.4'
