@@ -8,18 +8,22 @@
 <rect x="326" y="16" width="658" height="658" rx="8" fill="#f1f5f9" stroke="#d5dfe9"/>
 <text x="38" y="65" class="heading">External Libraries</text>
 <text x="350" y="65" class="heading">SGLang</text>
-<rect x="38" y="112" width="236" height="184" rx="6" fill="white" stroke="#d9d2e8"/>
-<text x="58" y="153" class="heading">AMD Mono</text>
-<text x="58" y="195" class="detail">Model spec</text>
-<text x="58" y="234" class="detail">Weight preparation</text>
-<text x="58" y="273" class="detail">Specialized kernels</text>
-<rect x="38" y="356" width="236" height="184" rx="6" fill="white" stroke="#d9d2e8"/>
-<text x="58" y="397" class="heading">NVIDIA Mega</text>
-<text x="58" y="439" class="detail">Model spec</text>
-<text x="58" y="478" class="detail">Weight preparation</text>
-<text x="58" y="517" class="detail">Specialized kernels</text>
-<path d="M274 194 H310 V151 H350" class="arrow"/>
-<path d="M274 438 H310 V194" fill="none" stroke="#77859a" stroke-width="2.3"/>
+<rect x="32" y="112" width="120" height="68" rx="5" fill="white" stroke="#d9d2e8"/>
+<rect x="164" y="112" width="120" height="68" rx="5" fill="white" stroke="#d9d2e8"/>
+<text x="92" y="140" text-anchor="middle" style="font-size:21px;font-weight:700">AMD</text>
+<text x="92" y="165" text-anchor="middle" style="font-size:21px;font-weight:700">Mono</text>
+<text x="224" y="140" text-anchor="middle" style="font-size:21px;font-weight:700">NVIDIA</text>
+<text x="224" y="165" text-anchor="middle" style="font-size:21px;font-weight:700">Mega</text>
+<path d="M92 180 V205 H224 V180 M158 205 V232" fill="none" stroke="#77859a" stroke-width="2.3"/>
+<rect x="32" y="232" width="252" height="340" rx="7" fill="#e8e2f3" stroke="#d9d2e8"/>
+<text x="158" y="266" text-anchor="middle" style="font-size:18px;fill:#53627a">Each library provides</text>
+<rect x="48" y="290" width="220" height="66" rx="5" fill="white" stroke="#d9d2e8"/>
+<text x="158" y="331" text-anchor="middle" style="font-size:23px">Model Spec</text>
+<rect x="48" y="382" width="220" height="66" rx="5" fill="white" stroke="#d9d2e8"/>
+<text x="158" y="423" text-anchor="middle" style="font-size:22px">Weight Preparation</text>
+<rect x="48" y="474" width="220" height="66" rx="5" fill="white" stroke="#d9d2e8"/>
+<text x="158" y="515" text-anchor="middle" style="font-size:22px">Specialized Kernels</text>
+<path d="M268 323 H310 V151 H350" class="arrow"/>
 <rect x="350" y="112" width="610" height="78" rx="6" fill="white" stroke="#cbd7e4"/>
 <text x="372" y="160" style="font-size:19px"><tspan font-weight="700">Register:</tspan> Register model-specific kernels from external libraries.</text>
 <path d="M655 190 V228" class="arrow"/>
@@ -30,7 +34,7 @@
 <text x="372" y="387"><tspan font-weight="700">Build:</tspan> Install forward dispatch and bind weights.</text>
 <path d="M655 456 V494" class="arrow"/>
 <rect x="350" y="494" width="610" height="78" rx="6" fill="white" stroke="#cbd7e4"/>
-<text x="372" y="542"><tspan font-weight="700">Runtime:</tspan> Coordinate plugin and native execution in SGLang’s ModelRunner.</text>
+<text x="372" y="542" style="font-size:16px"><tspan font-weight="700">Runtime:</tspan> Coordinate plugin and native execution in SGLang’s ModelRunner.</text>
 <path d="M655 572 V590 H500 V608" class="arrow"/>
 <path d="M655 590 H810 V608" class="arrow"/>
 <rect x="344" y="608" width="312" height="48" rx="5" fill="#e3f0e9" stroke="#bfd7ca"/>
