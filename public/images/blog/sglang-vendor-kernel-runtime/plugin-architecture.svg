@@ -33,6 +33,6 @@
 <text x="372" y="542"><tspan font-weight="700">Runtime:</tspan> Coordinate plugin and native execution in SGLang’s ModelRunner.</text>
 <path d="M655 572 V586 H490 V598" class="arrow"/>
 <path d="M655 586 H820 V598" class="arrow"/>
-<text x="490" y="620" text-anchor="middle" style="font-size:23px"><tspan font-weight="700">Plugin</tspan> · covered steps</text>
-<text x="820" y="620" text-anchor="middle" style="font-size:23px"><tspan font-weight="700">Native</tspan> · other steps</text>
+<text x="490" y="620" text-anchor="middle" style="font-size:23px">Specialized Forward</text>
+<text x="820" y="620" text-anchor="middle" style="font-size:23px">SGLang General Forward</text>
 </svg>
