@@ -47,4 +47,4 @@ External kernel implementations sit outside SGLang's regular code review process
 
 <p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Evolving Shared Plugin Interfaces</p>
 
-The AMD and NVIDIA integrations address different implementation needs today. As we gain experience with both, we plan to identify common requirements in registration, compatibility checks and resource binding. We will use that experience to improve shared interfaces and reduce duplicated integration work while preserving the flexibility each kernel library needs.
+Although the plugin framework is now in place, it is still at an early stage. We expect to refine its interfaces and design through long-term iteration as we integrate more kernels and learn from their use in production.
