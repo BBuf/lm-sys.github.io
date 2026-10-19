@@ -26,7 +26,12 @@ Specialized kernels can require substantial amounts of code. Each combination of
 
 To manage these low-latency improvements, we introduce a plugin system that connects external kernel libraries to SGLang. The initial libraries are [sgl-amd-mono](https://github.com/sgl-project/sgl-amd-mono) and [sgl-nvidia-mega](https://github.com/sgl-project/sgl-nvidia-mega). Each provides the three components shown on the left: model specifications that declare support and requirements, weight preparation for its execution path, and specialized kernels. Kernel developers maintain these implementations in separate packages. SGLang provides the integration with its serving runtime.
 
-The right side shows the integration flow. **Register** brings model-specific kernels from the external libraries into SGLang through plugin specifications. **Guard** validates hardware and configuration compatibility before weight loading and rejects unsupported setups. **Build** prepares the plugin after model loading, binds its weights and installs dispatch in the model's forward path. Plugin resources are prepared before SGLang sizes the KV cache. **Runtime** coordinates execution in SGLang's ModelRunner: supported steps use the plugin's specialized forward, while other steps use SGLang's general forward. Tensor-parallel ranks must agree on this coverage. With graph execution enabled, capture records the selected path and serving replays it without repeating Python dispatch.
+The right side shows the integration flow:
+
+- **Register** brings model-specific kernels from the external libraries into SGLang through plugin specifications.
+- **Guard** validates hardware and configuration compatibility before weight loading and rejects unsupported setups.
+- **Build** prepares the plugin after model loading, binds its weights and installs dispatch in the model's forward path. Plugin resources are prepared before SGLang sizes the KV cache.
+- **Runtime** coordinates execution in SGLang's ModelRunner: supported steps use the plugin's specialized forward, while other steps use SGLang's general forward. Tensor-parallel ranks must agree on this coverage. With graph execution enabled, capture records the selected path and serving replays it without repeating Python dispatch.
 
 ## Future Plans
 
