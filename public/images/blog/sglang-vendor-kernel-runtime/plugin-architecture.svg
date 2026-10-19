@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+<title id="title">How external kernels plug into SGLang</title>
+<desc id="desc">External packages register model specifications. SGLang validates the configuration, loads weights and builds the plugin, then dispatches supported steps to the plugin and other steps to the original forward. AMD can observe checkpoint weights during loading. NVIDIA provides a binding with lazy runtime-state access. Graph capture records the selected path for replay.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#77869d"/></marker></defs>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#223047}.title{font-size:25px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:18px}.small{font-size:16px;fill:#536279}.arrow{fill:none;stroke:#77869d;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="1100" height="760" rx="16" fill="#f7f9fc"/>
+<text x="32" y="43" class="title">How external kernels plug into SGLang</text>
+<rect x="28" y="66" width="292" height="655" rx="12" fill="#eef2ff" stroke="#ced8ef"/>
+<text x="48" y="99" class="head">External kernel libraries</text>
+<text x="48" y="127" class="body">sgl-amd-mono</text><text x="48" y="152" class="body">sgl-nvidia-mega</text>
+<rect x="47" y="183" width="254" height="115" rx="9" fill="white" stroke="#ced8ef"/>
+<text x="63" y="213" class="head">Model specification</text>
+<text x="63" y="242" class="small">Requirements and coverage</text>
+<text x="63" y="268" class="small">Build and execution interfaces</text>
+<rect x="47" y="345" width="254" height="114" rx="9" fill="white" stroke="#ced8ef"/>
+<text x="63" y="376" class="head">Model-specific code</text>
+<text x="63" y="405" class="small">Weight preparation</text>
+<text x="63" y="431" class="small">Specialized GPU kernels</text>
+<text x="48" y="514" class="body">Maintained in separate</text>
+<text x="48" y="540" class="body">packages with evolving APIs</text>
+<text x="370" y="99" class="head">SGLang integration and runtime</text>
+<rect x="370" y="122" width="688" height="90" rx="10" fill="white" stroke="#cdd8e7"/>
+<text x="390" y="154" class="head">1  Register</text>
+<text x="390" y="184" class="body">Plugin entry point registers a spec for a model architecture.</text>
+<path d="M301 217 H343 V167 H370" class="arrow"/>
+<path d="M714 212 V237" class="arrow"/>
+<rect x="370" y="237" width="688" height="90" rx="10" fill="white" stroke="#cdd8e7"/>
+<text x="390" y="269" class="head">2  Guard</text>
+<text x="390" y="299" class="body">Validate hardware and configuration; reject incompatible setups.</text>
+<path d="M714 327 V352" class="arrow"/>
+<rect x="370" y="352" width="688" height="151" rx="10" fill="white" stroke="#cdd8e7"/>
+<text x="390" y="384" class="head">3  Load weights, build &amp; bind</text>
+<text x="390" y="414" class="body">Build the plugin before KV cache sizing.</text>
+<text x="390" y="445" class="small">AMD: observe checkpoint tensors during weight loading.</text>
+<text x="390" y="474" class="small">NVIDIA: create binding; read runtime state when available.</text>
+<path d="M301 402 H370" class="arrow"/>
+<path d="M714 503 V528" class="arrow"/>
+<rect x="370" y="528" width="688" height="62" rx="10" fill="white" stroke="#cdd8e7"/>
+<text x="390" y="566" class="head">4  Runtime dispatch — select by step coverage</text>
+<path d="M540 590 V615" class="arrow"/><path d="M887 590 V615" class="arrow"/>
+<rect x="370" y="615" width="332" height="55" rx="9" fill="#dff1e9" stroke="#afcfc0"/>
+<text x="390" y="649" class="body">Covered → plugin forward</text>
+<rect x="726" y="615" width="332" height="55" rx="9" fill="#e8edf4" stroke="#cdd8e7"/>
+<text x="746" y="649" class="body">Other → original forward</text>
+<text x="370" y="705" class="small">Graphs: capture the selected path → replay recorded GPU work.</text>
+<text x="32" y="746" class="small">Shared integration pattern; AMD and NVIDIA currently use separate plugin interfaces.</text>
+</svg>
