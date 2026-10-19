@@ -70,6 +70,20 @@ Per-user decode speed is `(output tokens − 1) / (HTTP completion time − firs
 
 Matching the simulated mean acceptance controls the amount of speculative work; it does not measure a real workload's acceptance rate. Individual steps and short windows still vary; completed output tokens per request-level verify call ranged from 3.483 to 3.524 over the measured points. These points cover low-concurrency serving, not a complete Pareto frontier. Both arms use the same per-rank Engram host tables and TP synchronization settings, with 100% huge-page coverage reported for both Engram layers on every rank. The environment pins SGLang at `7b7015e72e4f`, the plugin at `d47deb3390e14`, model revision `314113f8a7da`, and PyTorch 2.14.1+cu130 on CUDA 13. Reproduction requires that pinned SGLang integration build from [PR #44945](https://github.com/sgl-project/sglang/pull/44945).
 
+**A long-context AgentX request.** We also replayed one recovered AgentX chat at concurrency one: 337,833 formatted input tokens, a freshly primed 336,128-token cached prefix, and 1,362 output tokens. The formatted token hash and cached-token counts matched the supplied request. Four fresh servers ran in off/on/on/off order, each with one warmup and ten timed replays, yielding 20 measurements per arm. This experiment simulates mean acceptance 5.4 and uses the same pinned software, host Engram and FP8 KV configuration in both arms.
+
+![Measured decode time per output token and time to first text for one recovered AgentX long-context request](/images/blog/sglang-vendor-kernel-runtime/nvidia-agentx-replay.svg)
+
+*Each point is one unprofiled replay; circles and squares identify the two fresh launches per arm, and horizontal lines show the median of all 20 measurements. The request is replayed in isolation with a controlled cache state; it does not represent a complete AgentX run.*
+
+| Median over 20 replays per arm | Plugin off | Plugin on | Change |
+| --- | ---: | ---: | ---: |
+| Decode time per output token | 0.949 ms | 0.830 ms | 12.5% lower |
+| Time to first text | 208.7 ms | 209.1 ms | 0.2% higher |
+| Request start to last text | 1,501.2 ms | 1,342.5 ms | 10.6% lower |
+
+For this client, decode time per output token is `(last nonempty text/reasoning arrival − first nonempty arrival) / (1,362 − 1)`. Prefix priming and counter collection occur outside the timed interval. Request-level output/verify-call ratios ranged from 5.300 to 5.470; the 5.4 setting controls simulated acceptance rather than measuring natural acceptance. Decode improved in both fresh-launch pairs, while time to first text showed no consistent improvement. The replay uses a 16,384-token prefill chunk, thinking enabled and a server request cap of 256 while issuing only one request at a time. This cap preserves the required decode graph batches, including 5–8; a cap of two omits those batches in the pinned runtime. These measurements are a new matched comparison, so historical timings from a different GPU-Engram setup are not used as a baseline.
+
 **Correctness checks with real acceptance.** Before timing, all 249 plugin unit tests and four serving regression checks per arm passed. Startup logs confirmed target and draft plugin activation on every TP rank and the required graph batches, including 5–8. Acceptance simulation was disabled for correctness testing.
 
 We also repeated the legacy GSM8K checks with the same server seed (`496233168`), identical prompts and per-question records, adding a concurrency-eight run with a larger output cap. The table reports those paired repeats alongside the original numerical-consistency and retrieval checks.
