@@ -1,33 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
-  <title id="title">Attention output handoff: SGLang and the NVIDIA plugin</title>
-  <desc id="desc">For DeepSeek-V4.1-Flash on four GB300 GPUs, the stock path hands projection output to SGLang's post-processing path, which already supports fused reduction and mHC. The plugin projection publishes partial rows directly to every rank's mailbox. Its consumer reduces available rows, updates residual streams and normalizes the next input. This is a dataflow diagram, not a timing trace or launch-count comparison.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Fuse mailbox publication into the output GEMM</title>
+  <desc id="desc">At concurrency one, both measured attention-output boundaries use two kernels per TP rank. Stock SGLang runs a wo_b GEMM followed by an already fused communication, mHC and normalization kernel. NVIDIA Mega fuses GEMM and mailbox publication in its first kernel, then launches a separate reduction, mHC and RMSNorm consumer. Compared with the unfused Lamport implementation, producer-side publication removes a separate publish launch and the output reread for that publication. The entire boundary is not a single kernel.</desc>
   <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#73849a"/></marker></defs>
-  <style>text{font-family:Arial,Helvetica,sans-serif;fill:#26364c;font-size:22px}.title{font-size:29px;font-weight:700}.label{font-size:22px;font-weight:700}.small{font-size:18px;fill:#53647b}.arrow{fill:none;stroke:#73849a;stroke-width:2;marker-end:url(#arrow)}</style>
-  <rect width="1200" height="520" rx="12" fill="#fff"/>
-  <text x="34" y="48" class="title">Bring the communication handoff into the computation</text>
-  <text x="34" y="79" class="small">DeepSeek-V4.1-Flash · 4 × GB300 · attention output at small verify widths</text>
-  <rect x="24" y="106" width="1152" height="156" rx="10" fill="#f1f5f9" stroke="#d5dee9"/>
-  <text x="46" y="145" class="label">SGLang</text>
-  <text x="46" y="174" class="small">Plugin off</text>
-  <rect x="235" y="128" width="335" height="108" rx="8" fill="#fff" stroke="#cbd5e1"/>
-  <text x="402" y="165" text-anchor="middle" class="label">Output projection (wo_b)</text>
-  <text x="402" y="197" text-anchor="middle">Produce TP-partial rows</text>
-  <path d="M570 182 H660" class="arrow"/>
-  <rect x="672" y="128" width="477" height="108" rx="8" fill="#fff" stroke="#cbd5e1"/>
-  <text x="910" y="165" text-anchor="middle" class="label">SGLang post-processing path</text>
-  <text x="910" y="197" text-anchor="middle">TP reduction + mHC + next input</text>
-  <text x="910" y="223" text-anchor="middle" class="small">Existing fused paths are preserved in the baseline</text>
-  <rect x="24" y="280" width="1152" height="156" rx="10" fill="#eef6f0" stroke="#c9decf"/>
-  <text x="46" y="320" class="label">NVIDIA Mega</text>
-  <text x="46" y="349" class="small">Plugin on</text>
-  <rect x="235" y="302" width="335" height="108" rx="8" fill="#fff" stroke="#b5d2be"/>
-  <text x="402" y="338" text-anchor="middle" class="label">wo_b + row publication</text>
-  <text x="402" y="370" text-anchor="middle">Write each peer's mailbox</text>
-  <path d="M570 356 H660" class="arrow"/>
-  <rect x="672" y="302" width="477" height="108" rx="8" fill="#fff" stroke="#b5d2be"/>
-  <text x="910" y="338" text-anchor="middle" class="label">Mailbox reduction consumer</text>
-  <text x="910" y="370" text-anchor="middle">Reduce rows + mHC + RMSNorm</text>
-  <text x="910" y="396" text-anchor="middle" class="small">Wait for the data needed by this consumer</text>
-  <text x="34" y="473" class="small">Source-level dataflow. Box widths and arrow lengths do not encode latency or CUDA launch counts.</text>
-  <text x="34" y="502" class="small">The specialized attention handoff covers up to 16 verify rows in the current slot plan.</text>
+  <style>text{font-family:Arial,Helvetica,sans-serif;fill:#26364c;font-size:21px}.title{font-size:29px;font-weight:700}.label{font-size:22px;font-weight:700}.small{font-size:18px;fill:#53647b}.tag{font-size:16px;font-weight:700;letter-spacing:1px}.benefit{fill:#226d49;font-weight:700}.arrow{fill:none;stroke:#73849a;stroke-width:2;marker-end:url(#arrow)}</style>
+  <rect width="1200" height="650" rx="12" fill="#fff"/>
+  <text x="34" y="46" class="title">Fuse mailbox publication into the output GEMM</text>
+  <text x="34" y="77" class="small">DeepSeek-V4.1-Flash · 4 × GB300 · TP4 · concurrency 1 · six verify rows</text>
+  <rect x="24" y="102" width="1152" height="166" rx="10" fill="#f1f5f9" stroke="#d5dee9"/>
+  <text x="45" y="143" class="label">SGLang</text>
+  <text x="45" y="173" class="small">Plugin off</text>
+  <text x="45" y="205" class="small">2 kernels</text>
+  <rect x="220" y="119" width="390" height="132" rx="8" fill="#fff" stroke="#cbd5e1"/>
+  <text x="240" y="146" class="tag">KERNEL 1</text>
+  <text x="415" y="181" text-anchor="middle" class="label">wo_b GEMM</text>
+  <text x="415" y="215" text-anchor="middle">Write TP-partial output</text>
+  <path d="M611 184 H658" class="arrow"/>
+  <rect x="672" y="119" width="477" height="132" rx="8" fill="#fff" stroke="#cbd5e1"/>
+  <text x="692" y="146" class="tag">KERNEL 2</text>
+  <text x="910" y="181" text-anchor="middle" class="label">Fused SGLang post-processing</text>
+  <text x="910" y="211" text-anchor="middle">Communication + mHC + RMSNorm</text>
+  <text x="910" y="237" text-anchor="middle" class="small">Reads the projection output from memory</text>
+  <rect x="24" y="290" width="1152" height="184" rx="10" fill="#eef6f0" stroke="#c9decf"/>
+  <text x="45" y="334" class="label">NVIDIA Mega</text>
+  <text x="45" y="364" class="small">Plugin on</text>
+  <text x="45" y="396" class="small">2 kernels</text>
+  <rect x="220" y="307" width="390" height="150" rx="8" fill="#e1f1e6" stroke="#77ae8d" stroke-width="2"/>
+  <text x="240" y="335" class="tag benefit">KERNEL 1 · FUSED</text>
+  <text x="415" y="374" text-anchor="middle" class="label">wo_b GEMM + row publication</text>
+  <text x="415" y="408" text-anchor="middle">Epilogue writes peer mailboxes</text>
+  <text x="415" y="437" text-anchor="middle" class="small">No publish launch · no publication reread</text>
+  <path d="M611 383 H658" class="arrow"/>
+  <text x="634" y="366" text-anchor="middle" class="small">PDL</text>
+  <rect x="672" y="307" width="477" height="150" rx="8" fill="#fff" stroke="#b5d2be"/>
+  <text x="692" y="335" class="tag">KERNEL 2 · SEPARATE CONSUMER</text>
+  <text x="910" y="374" text-anchor="middle" class="label">Mailbox reduction + mHC + RMSNorm</text>
+  <text x="910" y="408" text-anchor="middle">Wait for published rows, then consume</text>
+  <text x="910" y="437" text-anchor="middle" class="small">Not fused into the GEMM kernel</text>
+  <text x="34" y="512" class="label benefit">Fusion benefit: GEMM and mailbox publication share one kernel.</text>
+  <text x="34" y="544" class="small">Versus the unfused Lamport path: one fewer publish launch, no publish grid wait or output reread.</text>
+  <text x="34" y="574" class="small">The measured stock SGLang baseline already has fused post-processing: this boundary stays at two kernels.</text>
+  <text x="34" y="609" class="small">Boxes mark kernel boundaries, not durations. mHC coefficient preparation is outside this view.</text>
+  <text x="34" y="636" class="small">The specialized attention handoff supports up to 16 verify rows in the current slot plan.</text>
 </svg>
