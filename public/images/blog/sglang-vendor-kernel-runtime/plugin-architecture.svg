@@ -24,7 +24,7 @@
 <text x="372" y="160" style="font-size:19px"><tspan font-weight="700">Register:</tspan> Register model-specific kernels from external libraries.</text>
 <path d="M655 190 V228" class="arrow"/>
 <rect x="350" y="228" width="610" height="78" rx="6" fill="white" stroke="#cbd7e4"/>
-<text x="372" y="276"><tspan font-weight="700">Guard:</tspan> Validate hardware &amp; configuration</text>
+<text x="372" y="276"><tspan font-weight="700">Guard:</tspan> Validate hardware/configuration compatibility.</text>
 <path d="M655 306 V344" class="arrow"/>
 <rect x="350" y="344" width="610" height="112" rx="6" fill="white" stroke="#cbd7e4"/>
 <text x="372" y="387"><tspan font-weight="700">Build:</tspan> Install model-forward dispatch</text>
