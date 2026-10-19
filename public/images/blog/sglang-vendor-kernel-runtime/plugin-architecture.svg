@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="690" viewBox="0 0 1000 690" role="img" aria-labelledby="title desc">
 <title id="title">Plugin integration in SGLang</title>
 <desc id="desc">AMD Mono and NVIDIA Mega supply model specifications, weight preparation and kernels. SGLang registers specifications, checks configuration, binds resources and installs model-forward dispatch. Covered steps use plugin execution; other steps use native execution.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#77859a"/></marker></defs>
 <style>text{font-family:Arial,Helvetica,sans-serif;fill:#26354b;font-size:25px}.heading{font-size:28px;font-weight:700}.detail{font-size:23px;fill:#53627a}.arrow{fill:none;stroke:#77859a;stroke-width:2.3;marker-end:url(#arrow)}</style>
-<rect width="1000" height="650" fill="white"/>
-<rect x="16" y="16" width="280" height="618" rx="8" fill="#f2eff9" stroke="#d9d2e8"/>
-<rect x="326" y="16" width="658" height="618" rx="8" fill="#f1f5f9" stroke="#d5dfe9"/>
+<rect width="1000" height="690" fill="white"/>
+<rect x="16" y="16" width="280" height="658" rx="8" fill="#f2eff9" stroke="#d9d2e8"/>
+<rect x="326" y="16" width="658" height="658" rx="8" fill="#f1f5f9" stroke="#d5dfe9"/>
 <text x="38" y="65" class="heading">External Libraries</text>
 <text x="350" y="65" class="heading">SGLang</text>
 <rect x="38" y="112" width="236" height="184" rx="6" fill="white" stroke="#d9d2e8"/>
@@ -31,8 +31,10 @@
 <path d="M655 456 V494" class="arrow"/>
 <rect x="350" y="494" width="610" height="78" rx="6" fill="white" stroke="#cbd7e4"/>
 <text x="372" y="542"><tspan font-weight="700">Runtime:</tspan> Coordinate plugin and native execution in SGLang’s ModelRunner.</text>
-<path d="M655 572 V586 H490 V598" class="arrow"/>
-<path d="M655 586 H820 V598" class="arrow"/>
-<text x="490" y="620" text-anchor="middle" style="font-size:23px">Specialized Forward</text>
-<text x="820" y="620" text-anchor="middle" style="font-size:23px">SGLang General Forward</text>
+<path d="M655 572 V590 H500 V608" class="arrow"/>
+<path d="M655 590 H810 V608" class="arrow"/>
+<rect x="344" y="608" width="312" height="48" rx="5" fill="#e3f0e9" stroke="#bfd7ca"/>
+<rect x="668" y="608" width="306" height="48" rx="5" fill="#e5ebf3" stroke="#cbd7e4"/>
+<text x="500" y="638" text-anchor="middle" style="font-size:19px"><tspan font-weight="700">Plugin:</tspan> Specialized Forward</text>
+<text x="821" y="638" text-anchor="middle" style="font-size:18px"><tspan font-weight="700">Native:</tspan> SGLang General Forward</text>
 </svg>
