@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="960" viewBox="0 0 1120 960" role="img" aria-labelledby="title desc">
 <title id="title">External libraries and SGLang integration</title>
-<desc id="desc">AMD Mono and NVIDIA Mega register specifications. SGLang validates configuration, builds the implementation and connects resources, then dispatches supported steps to the plugin or other steps to native execution. Function names reflect the separate AMD and NVIDIA interfaces.</desc>
+<desc id="desc">AMD Mono and NVIDIA Mega register specifications. SGLang validates configuration, builds the implementation and connects resources, then dispatches supported steps to the plugin or other steps to native execution. AMD and NVIDIA use separate interfaces following this shared pattern.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#718198"/></marker></defs>
 <style>text{font-family:Arial,Helvetica,sans-serif;fill:#24334b}.title{font-size:30px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:23px}.code{font-family:Menlo,Consolas,monospace;font-size:20px}.note{font-size:21px;fill:#52637b}.arrow{fill:none;stroke:#718198;stroke-width:2.5;marker-end:url(#arrow)}</style>
 <rect width="1120" height="960" fill="#fafbfd" rx="14"/>
@@ -18,7 +18,23 @@
 <text x="66" y="568" class="body">Weight preparation</text>
 <text x="66" y="611" class="body">Specialized kernels</text><path d="M300 225 H339 V177 H390" class="arrow"/>
 <path d="M300 515 H339 V225" fill="none" stroke="#718198" stroke-width="2.5"/>
-<rect x="390" y="118" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="154" text-anchor="middle" class="head">Register</text><text x="725" y="188" text-anchor="middle" class="code">monokernels.spec.register()</text><text x="725" y="217" text-anchor="middle" class="code">megakernels.spec.register()</text><path d="M725 236 V276" class="arrow"/><rect x="390" y="276" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="312" text-anchor="middle" class="head">Guard</text><text x="725" y="346" text-anchor="middle" class="code">handle_monokernel()</text><text x="725" y="375" text-anchor="middle" class="code">handle_nvidia_megakernel()</text><path d="M725 394 V434" class="arrow"/><rect x="390" y="434" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="470" text-anchor="middle" class="head">Build</text><text x="725" y="504" text-anchor="middle" class="code">install_monokernel_forward()</text><text x="725" y="533" text-anchor="middle" class="code">install_megakernel()</text><path d="M725 552 V592" class="arrow"/><rect x="390" y="592" width="670" height="118" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="628" text-anchor="middle" class="head">Bind resources</text><text x="725" y="662" text-anchor="middle" class="body">Weights · KV cache · Attention metadata</text><text x="725" y="691" text-anchor="middle" class="note">NVIDIA: MegakernelBinding / ForwardView</text><path d="M725 710 V750" class="arrow"/><rect x="390" y="750" width="670" height="75" rx="10" fill="white" stroke="#c6d3e4"/><text x="725" y="786" text-anchor="middle" class="head">Runtime dispatch</text><path d="M725 825 V842 H548 V861" class="arrow"/>
+<rect x="390" y="118" width="670" height="150" rx="10" fill="white" stroke="#c6d3e4"/>
+<text x="420" y="164" class="head">Register</text>
+<text x="420" y="208" class="body">Declare supported models and kernel requirements.</text>
+<path d="M725 268 V310" class="arrow"/>
+<rect x="390" y="310" width="670" height="150" rx="10" fill="white" stroke="#c6d3e4"/>
+<text x="420" y="356" class="head">Guard</text>
+<text x="420" y="400" class="body">Validate hardware, model and serving configuration.</text>
+<path d="M725 460 V502" class="arrow"/>
+<rect x="390" y="502" width="670" height="170" rx="10" fill="white" stroke="#c6d3e4"/>
+<text x="420" y="548" class="head">Build</text>
+<text x="420" y="592" class="body">Prepare resources and bind weights and runtime state.</text>
+<text x="420" y="632" class="body">Install the plugin in the model's forward path.</text>
+<path d="M725 672 V714" class="arrow"/>
+<rect x="390" y="714" width="670" height="110" rx="10" fill="white" stroke="#c6d3e4"/>
+<text x="420" y="758" class="head">Runtime dispatch</text>
+<text x="420" y="798" class="body">Select the execution path for each step.</text>
+<path d="M725 824 V842 H548 V861" class="arrow"/>
 <path d="M725 842 H902 V861" class="arrow"/>
 <rect x="390" y="861" width="316" height="58" rx="10" fill="#dcefe6" stroke="#afcfc0"/>
 <text x="548" y="897" text-anchor="middle" class="body">Covered → Plugin forward</text>
