@@ -37,8 +37,14 @@ This design lets kernel teams ship focused optimizations without adding every sp
 
 ## Future Plans
 
-### Broader Model, Hardware, and Workload Coverage
+<p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Broader Model, Hardware, and Workload Coverage</p>
 
-### Validation and Performance
+We plan to extend support to more models, GPU architectures and parallel configurations. We will also expand the batch sizes and context lengths where specialized execution provides a measurable benefit. Each extension will be evaluated against SGLang's general forward to establish where it improves latency and where the general path remains preferable.
 
-### Evolving Shared Plugin Interfaces
+<p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">CI and Performance Validation</p>
+
+As SGLang and the external libraries evolve together, CI needs to catch both interface breakages and execution regressions. We plan to strengthen coverage from plugin contract tests to end-to-end serving tests on supported hardware. These tests should check output correctness, graph execution and fallback behavior, alongside latency and throughput under representative workloads.
+
+<p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Evolving Shared Plugin Interfaces</p>
+
+The AMD and NVIDIA integrations address different implementation needs today. As we gain experience with both, we plan to identify common requirements in registration, compatibility checks and resource binding. We will use that experience to improve shared interfaces and reduce duplicated integration work while preserving the flexibility each kernel library needs.
