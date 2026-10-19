@@ -6,7 +6,7 @@ previewImg: /images/blog/sglang-vendor-kernel-runtime/runtime.svg
 type: blog
 ---
 
-*[Intro]*
+Today we introduce low-latency inference mode in SGLang. It combines specialized kernels with runtime support to reduce inference latency. The plugin system lets us iterate aggressively on these optimizations as hardware and models evolve. Our initial implementations support AMD and NVIDIA GPUs.
 
 *[Figure 1: Low-latency inference results]*
 
