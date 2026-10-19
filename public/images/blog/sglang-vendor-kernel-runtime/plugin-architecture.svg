@@ -2,7 +2,7 @@
 <title id="title">External kernel plugins and the SGLang runtime</title>
 <desc id="desc">External AMD and NVIDIA packages provide specifications and specialized execution. SGLang registers and validates specifications, builds the plugin using model weights, and supplies runtime state through integration interfaces. A dispatcher routes covered steps to the built plugin or other steps to native execution. Weight preparation happens at startup; runtime state is accessed when available. The two backends have distinct interfaces.</desc>
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#64768f"/></marker></defs>
-<style>text{font-family:Arial,Helvetica,sans-serif;fill:#23334b}.section{font-size:27px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px;fill:#4e617d}.arrow{fill:none;stroke:#64768f;stroke-width:2.5;marker-end:url(#arr)}.data{fill:none;stroke:#438773;stroke-width:2.5;stroke-dasharray:7 5;marker-end:url(#arr)}</style>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#23334b}.section{font-size:27px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px;fill:#4e617d}.arrow{fill:none;stroke:#64768f;stroke-width:2.5;marker-end:url(#arr)}.data{fill:none;stroke:#64768f;stroke-width:2.5;marker-end:url(#arr)}</style>
 <rect width="1120" height="820" rx="16" fill="#fafbfd"/>
 <!-- Two rectangular ownership regions -->
 <rect x="24" y="24" width="306" height="772" rx="12" fill="#f0edfa" stroke="#d7cee9"/>
@@ -67,6 +67,4 @@
 <path d="M608 739 H572" class="arrow"/>
 <path d="M783 739 H823" class="arrow"/>
 <path d="M757 647 V679 H899 V707" class="data"/>
-<text x="46" y="707" class="small">Solid: setup / execution</text>
-<text x="46" y="740" class="small">Dashed: resource access</text>
 </svg>
