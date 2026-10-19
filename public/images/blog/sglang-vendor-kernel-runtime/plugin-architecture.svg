@@ -16,7 +16,6 @@
 <text x="224" y="165" text-anchor="middle" style="font-size:21px;font-weight:700">Mega</text>
 <path d="M92 180 V205 H224 V180 M158 205 V232" fill="none" stroke="#77859a" stroke-width="2.3"/>
 <rect x="32" y="232" width="252" height="340" rx="7" fill="#e8e2f3" stroke="#d9d2e8"/>
-<text x="158" y="266" text-anchor="middle" style="font-size:18px;fill:#53627a">Each library provides</text>
 <rect x="48" y="290" width="220" height="66" rx="5" fill="white" stroke="#d9d2e8"/>
 <text x="158" y="331" text-anchor="middle" style="font-size:23px">Model Spec</text>
 <rect x="48" y="382" width="220" height="66" rx="5" fill="white" stroke="#d9d2e8"/>
