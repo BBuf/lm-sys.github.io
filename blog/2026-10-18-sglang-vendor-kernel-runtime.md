@@ -45,15 +45,42 @@ At one request, Engram lookup and WKV preparation can also run ahead on a side s
 
 The supported serving configuration uses full decode CUDA graphs. Kernels and buffers are prepared at model initialization, and the graph records the selected path for each covered shape. Prefill, unsupported widths and ordinary eager fallback steps use SGLang's original forward. Cross-GPU waits have deadlines, and the plugin declares per-operation numerical tolerances as part of its [model specification](https://github.com/sgl-project/sgl-nvidia-mega/blob/d47deb3390e14741c9420ac702954e7611a14da1/sgl_nvidia_mega/deepseek_v41/spec.py).
 
-**Controlled decode results.** The [reported comparison](https://github.com/Oasis-Git/lm-sys.github.io/pull/1) uses DeepSeek-V4.1-Flash on one four-GPU GB300 node, TP4, FP8 KV cache and the FlashMLA attention backend. Both arms use the same SGLang build and launch settings; the plugin flag is the only difference. On static 8K-input / 1K-output requests, reported per-user decode speed improves by 38%, 30%, 23% and 11% at concurrency 1, 2, 4 and 8.
+**What changes in a warmed CUDA graph.** We captured five target-verify and five draft graph replays on each of the four TP ranks at concurrency one. CPU stage annotations and CUDA launch correlation IDs identify the GPU work belonging to each replay. The target graph executes 1,189 kernels with the plugin, versus 1,205 without it; the draft graph executes 97 versus 167. In particular, ten partial and five finish kernels in the stock Markov proposal become one plugin proposal kernel. These counts are consistent across every captured rank and replay. Most of the target benefit therefore needs an explanation beyond launch-count reduction.
 
-![Reported per-user decode speed for DeepSeek-V4.1-Flash with DSpark on four GB300 GPUs, comparing SGLang with and without the NVIDIA megakernel flag](/images/blog/sglang-vendor-kernel-runtime/nvidia-static-decode.svg)
+![Measured routed MoE timeline with and without the NVIDIA plugin, showing overlapping operations for six verify rows](/images/blog/sglang-vendor-kernel-runtime/nvidia-moe-timeline.svg)
 
-*DeepSeek-V4.1-Flash · 4 × GB300 · TP4 · DSpark block size 5 · FP8 KV cache · static 8K input / 1K output. "Plugin off" is SGLang without `--enable-nvidia-megakernel`; "plugin on" enables the shipped NVIDIA kernel slots. Speculative acceptance is fixed at 3.51 tokens per verify step in both arms. This is a controlled low-concurrency decode comparison, separate from an AgentX workload or a full serving Pareto frontier.*
+*One matched target-layer example, selected by proximity to both arms' median routing-to-post span. Across 40 layers, five replays and four ranks (800 windows per arm), that span is 44.42 µs with the plugin off and 36.54 µs with it on. Rows identify operations and preserve their measured overlap; concurrent shared-expert work and mHC preparation are omitted.*
 
-Fixing acceptance makes the two arms execute a comparable number of verify steps, which helps isolate execution cost. It does not measure the acceptance rate of a real workload. The [reproduction protocol](https://github.com/sgl-project/sgl-nvidia-mega/blob/d47deb3390e14741c9420ac702954e7611a14da1/benchmark/README.md) also specifies the per-rank Engram host table, TP synchronization settings and prepared huge-page conditions. Those conditions need to accompany reproduced results because host-table placement can affect this workload.
+The timeline shows how routing, expert GEMMs and the output handoff compose. A shorter path does not require every individual kernel to be faster: GEMM 1 in the illustrated plugin path has a longer instrumented duration, while later operations overlap. PDL consumers can spend part of their measured duration waiting for dependencies, so adding kernel durations would overstate elapsed work. These CUPTI traces are diagnostic evidence; the serving results below come from separate runs without a profiler.
 
-Accuracy is evaluated separately with real DSpark acceptance. The existing report gives GSM8K-200 scores of 196/200 without the plugin and 197/200 with it at the reported concurrency settings, and full passes on its 16K and 24–32K long-context sets (96/96 and 32/32). These are the observed test results; the one-question difference does not establish an accuracy improvement or numerical equivalence.
+**Controlled decode results.** We independently compared the shipped default plugin slots on one four-GPU GB300 node, using TP4, FP8 KV cache, FlashMLA and the same software revisions and effective server configuration. Four fresh servers ran in off/on/on/off order. Each launch measured concurrency 1, 2, 4 and 8 in forward and reverse order, with identical 8,192-token inputs and 1,024-token outputs across arms. At concurrency one, each pass included at least 60 seconds of warmup followed by 30 timed requests. Higher-concurrency points used 2C warmup requests and 5C timed requests.
+
+![Independently measured low-concurrency throughput and per-user decode speed for DeepSeek-V4.1-Flash on four GB300 GPUs](/images/blog/sglang-vendor-kernel-runtime/nvidia-low-concurrency.svg)
+
+*DeepSeek-V4.1-Flash · 4 × GB300 · TP4 · DSpark block size 5 · FP8 KV cache. “Plugin on” enables `--enable-nvidia-megakernel`; “off” retains SGLang's stock execution. Both arms simulate a mean acceptance length of 3.51. Large points average the four pass summaries per arm; small dots show individual passes, and bars span the two fresh-launch means. The bars are not confidence intervals. Connecting lines only guide the eye across these low-concurrency measurements.*
+
+| Concurrent requests | Plugin off, tokens/s/user | Plugin on, tokens/s/user | Decode speed increase |
+| --- | ---: | ---: | ---: |
+| 1 | 745.6 | 1,030.2 | 38.2% |
+| 2 | 647.6 | 837.5 | 29.3% |
+| 4 | 541.0 | 658.1 | 21.6% |
+| 8 | 373.0 | 416.3 | 11.6% |
+
+Per-user decode speed is `(output tokens − 1) / (HTTP completion time − first text arrival)`, summarized with the supplied client's p50 convention. Aggregate output throughput is measured separately over the complete timed request interval, including prefill, then divided by four GPUs. This distinction matters: the x-axis is not concurrency multiplied by a median decode speed. The [request-level records](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/static-request-samples.csv) retain all 800 timed requests.
+
+Matching the simulated mean acceptance controls the amount of speculative work; it does not measure a real workload's acceptance rate. Individual steps and short windows still vary. These points cover low-concurrency serving, not a complete Pareto frontier. Both arms use the same per-rank Engram host tables and TP synchronization settings, with 100% huge-page coverage reported for both Engram layers on every rank. The [reproduction notes](/images/blog/sglang-vendor-kernel-runtime/nvidia-evidence/README.md) include the exact launch settings, timing definitions and sampling procedure. The environment pins SGLang at `7b7015e72e4f`, the plugin at `d47deb3390e14`, model revision `314113f8a7da`, and PyTorch 2.14.1+cu130 on CUDA 13.
+
+**Correctness checks with real acceptance.** We independently ran the pinned plugin's unit tests and serving regression suite before timing. All 249 unit tests and four serving checks per arm passed. Startup logs confirmed that both target and draft plugins were active on every TP rank, with the required target graph batches including 5–8 captured. Acceptance simulation was disabled for these checks.
+
+| Check | Plugin off | Plugin on | Test threshold |
+| --- | ---: | ---: | --- |
+| Legacy GSM8K-200 gate, parallel 12 | 183/200 | 176/200 | >85% |
+| Legacy GSM8K-200 gate, parallel 16 | 184/200 | 179/200 | >85% |
+| Decode-versus-prefill mean KL, 8 short prompts | 0.00719 | 0.00836 | <0.03 |
+| Decode-versus-prefill mean KL, 4 prompts of 18K–27K tokens | 0.00359 | 0.00793 | <0.06 |
+| Long-context passkey retrieval | Pass | Pass | Exact passkey |
+
+The [serving suite](https://github.com/sgl-project/sgl-nvidia-mega/blob/d47deb3390e14741c9420ac702954e7611a14da1/test/e2e/test_deepseek_v41_server.py) is a gross-failure and consistency check. Its legacy GSM8K helper uses greedy decoding with a 512-token cap, and reuses the first eight test examples as demonstrations. We therefore report it as a regression gate rather than a clean held-out benchmark. The plugin scored lower in both initial GSM8K runs. Those initial servers used different automatically selected random seeds, so this pair does not isolate the source of the difference. Passing the thresholds does not establish numerical equivalence or an accuracy improvement.
 
 ## Plugin System: Design and Integration
 
