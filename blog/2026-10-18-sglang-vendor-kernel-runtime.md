@@ -37,9 +37,9 @@ This design lets kernel teams ship focused optimizations without adding every sp
 
 ## Future Plans
 
-<p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Broader Model, Hardware, and Workload Coverage</p>
+<p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Broader Model Support</p>
 
-We plan to extend support to more models, GPU architectures and parallel configurations. We will also expand the batch sizes and context lengths where specialized execution provides a measurable benefit. Each extension will be evaluated against SGLang's general forward to establish where it improves latency and where the general path remains preferable.
+Megakernel development is underway for GLM-5.3, K3, MiniMax M3 and other models on both AMD and NVIDIA GPUs. We plan to integrate these implementations into the plugin framework as they become ready.
 
 <p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">CI and Performance Validation</p>
 
