@@ -18,14 +18,6 @@ Today we introduce low-latency inference mode in SGLang. It combines specialized
 
 ## Plugin System: Design and Integration
 
-### Design Goals
-
-### Plugin Interface and Binding
-
-### Runtime Dispatch and Fallback
-
-### Graph Capture and Replay
-
 ## Future Plans
 
 ### Broader Model, Hardware, and Workload Coverage
