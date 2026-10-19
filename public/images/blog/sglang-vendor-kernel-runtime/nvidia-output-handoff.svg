@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Attention output handoff: SGLang and the NVIDIA plugin</title>
+  <desc id="desc">For DeepSeek-V4.1-Flash on four GB300 GPUs, the stock path hands projection output to SGLang's post-processing path, which already supports fused reduction and mHC. The plugin projection publishes partial rows directly to every rank's mailbox. Its consumer reduces available rows, updates residual streams and normalizes the next input. This is a dataflow diagram, not a timing trace or launch-count comparison.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10" fill="#73849a"/></marker></defs>
+  <style>text{font-family:Arial,Helvetica,sans-serif;fill:#26364c;font-size:22px}.title{font-size:29px;font-weight:700}.label{font-size:22px;font-weight:700}.small{font-size:18px;fill:#53647b}.arrow{fill:none;stroke:#73849a;stroke-width:2;marker-end:url(#arrow)}</style>
+  <rect width="1200" height="520" rx="12" fill="#fff"/>
+  <text x="34" y="48" class="title">Bring the communication handoff into the computation</text>
+  <text x="34" y="79" class="small">DeepSeek-V4.1-Flash · 4 × GB300 · attention output at small verify widths</text>
+  <rect x="24" y="106" width="1152" height="156" rx="10" fill="#f1f5f9" stroke="#d5dee9"/>
+  <text x="46" y="145" class="label">SGLang</text>
+  <text x="46" y="174" class="small">Plugin off</text>
+  <rect x="235" y="128" width="335" height="108" rx="8" fill="#fff" stroke="#cbd5e1"/>
+  <text x="402" y="165" text-anchor="middle" class="label">Output projection (wo_b)</text>
+  <text x="402" y="197" text-anchor="middle">Produce TP-partial rows</text>
+  <path d="M570 182 H660" class="arrow"/>
+  <rect x="672" y="128" width="477" height="108" rx="8" fill="#fff" stroke="#cbd5e1"/>
+  <text x="910" y="165" text-anchor="middle" class="label">SGLang post-processing path</text>
+  <text x="910" y="197" text-anchor="middle">TP reduction + mHC + next input</text>
+  <text x="910" y="223" text-anchor="middle" class="small">Existing fused paths are preserved in the baseline</text>
+  <rect x="24" y="280" width="1152" height="156" rx="10" fill="#eef6f0" stroke="#c9decf"/>
+  <text x="46" y="320" class="label">NVIDIA Mega</text>
+  <text x="46" y="349" class="small">Plugin on</text>
+  <rect x="235" y="302" width="335" height="108" rx="8" fill="#fff" stroke="#b5d2be"/>
+  <text x="402" y="338" text-anchor="middle" class="label">wo_b + row publication</text>
+  <text x="402" y="370" text-anchor="middle">Write each peer's mailbox</text>
+  <path d="M570 356 H660" class="arrow"/>
+  <rect x="672" y="302" width="477" height="108" rx="8" fill="#fff" stroke="#b5d2be"/>
+  <text x="910" y="338" text-anchor="middle" class="label">Mailbox reduction consumer</text>
+  <text x="910" y="370" text-anchor="middle">Reduce rows + mHC + RMSNorm</text>
+  <text x="910" y="396" text-anchor="middle" class="small">Wait for the data needed by this consumer</text>
+  <text x="34" y="473" class="small">Source-level dataflow. Box widths and arrow lengths do not encode latency or CUDA launch counts.</text>
+  <text x="34" y="502" class="small">The specialized attention handoff covers up to 16 verify rows in the current slot plan.</text>
+</svg>
