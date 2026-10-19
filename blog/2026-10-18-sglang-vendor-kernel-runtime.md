@@ -43,7 +43,7 @@ Megakernel development is underway for GLM-5.3, K3, MiniMax M3 and other models 
 
 <p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">CI and Performance Validation</p>
 
-As SGLang and the external libraries evolve together, CI needs to catch both interface breakages and execution regressions. We plan to strengthen coverage from plugin contract tests to end-to-end serving tests on supported hardware. These tests should check output correctness, graph execution and fallback behavior, alongside latency and throughput under representative workloads.
+External kernel implementations sit outside SGLang's regular code review process. Strong CI coverage at the plugin interface is therefore essential to verify that these implementations meet SGLang's correctness and runtime requirements. We plan to test compatibility checks, weight binding, forward outputs and state updates, including KV-cache writes. End-to-end tests will also cover graph execution, fallback behavior and performance regressions as SGLang and the external libraries evolve.
 
 <p style="font-size: 1.375rem; font-weight: 700; color: #111; margin-top: 1.5rem;">Evolving Shared Plugin Interfaces</p>
 
